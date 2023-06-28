@@ -11,17 +11,7 @@ local Pieces = Classes.Pieces
 local Piece = require(Pieces.BasePiece)
 
 --// Constants
-local START_FEN = "rnbqkbnr/ppppppp1p/8/8/8/8/PPPPPPPP/RNBQKBKR w KQkq - 0"
-
-local function isUpper(character : string) : boolean
-    if (string.lower(character) ~= character) then return true end
-    return false
-end
-
-local function isLower(character : string) : boolean
-    if (string.upper(character) ~= character) then return true end
-    return false
-end
+local START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBKR w KQkq - 0"
 
 local function createBoard()
     local board = {}
@@ -65,9 +55,9 @@ function Match:_loadPositionFromFEN(FEN : string)
                 file += tonumber(character)
             else
                 if (String:IsUpper(character)) then
-                    self.Board[rank][file] = character
+                    self.Board[rank][file] = Piece.new(string.upper(character), "w")
                 elseif (String:IsLower(character)) then
-                    self.Board[rank][file] = character
+                    self.Board[rank][file] = Piece.new(string.upper(character), "b")
                 end
                 file += 1
             end
@@ -82,4 +72,4 @@ function Match:Destroy()
    self.Turn = nil
 end
 
-return Match.new()
+return Match
