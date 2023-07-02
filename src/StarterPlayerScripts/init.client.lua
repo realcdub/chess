@@ -4,7 +4,12 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 --// Utility
 local Knit = require(ReplicatedStorage.Shared.Packages.Knit)
 
-Knit.AddControllers(ReplicatedStorage.Shared.Controllers)
+for _, Controller in pairs(ReplicatedStorage.Shared.Controllers:GetDescendants()) do
+    if (Controller.Name:match("Controller$")) then
+        print(Controller.Name .. " Loaded")
+        require(Controller)
+    end
+end
 
 Knit.Start():andThen(function()
     warn("Client Started")
