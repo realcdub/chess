@@ -1,3 +1,5 @@
+-- amazingcdub
+
 --// Classes
 local BasePiece = require(script.Parent.BasePiece)
 
@@ -7,6 +9,7 @@ King.__index = King
 
 function King.new(Color : string, FileIndex : number, RankIndex : number)
     local self = setmetatable(BasePiece.new("K", Color, FileIndex, RankIndex), King)
+    self.NumberOfMoves = 0
     return self
 end
 

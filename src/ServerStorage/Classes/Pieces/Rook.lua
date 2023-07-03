@@ -1,3 +1,5 @@
+-- amazingcdub
+
 --// Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -6,8 +8,6 @@ local PieceUtil = require(ReplicatedStorage.Shared.Packages.PieceUtil)
 
 --// Classes
 local BasePiece = require(script.Parent.BasePiece)
-
---// Variables
 
 -- Pawn
 local Rook = {}
@@ -19,10 +19,10 @@ function Rook.new(Color : string, FileIndex : number, RankIndex : number)
 end
 
 function Rook:GetPossibleMoves(InternalBoard)
-    local DistanceToTheLeft = math.abs(1 - self.FileIndex)
-    local DistanceToTheRight = 8 - self.FileIndex
-    local DistanceToTheTop = 8 - self.RankIndex
-    local DistanceToTheBottom = math.abs(1 - self.RankIndex)
+    local DistanceToTheLeft = PieceUtil:GetDistanceToTheLeft(self.FileIndex)
+    local DistanceToTheRight = PieceUtil:GetDistanceToTheRight(self.FileIndex)
+    local DistanceToTheTop = PieceUtil:GetDistanceToTop(self.RankIndex)
+    local DistanceToTheBottom = PieceUtil:GetDistanceToBottom(self.RankIndex)
 
     -- Top Corner
     local Top = PieceUtil:GetOrthogonalOrDiagonalMoves(InternalBoard, InternalBoard[self.RankIndex][self.FileIndex], DistanceToTheTop, 0, 1)

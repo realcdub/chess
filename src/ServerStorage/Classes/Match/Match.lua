@@ -1,8 +1,10 @@
+-- amazingcdub
+
 --// Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 
---// Utility
+--// Packages
 local String = require(ReplicatedStorage.Shared.Packages.String)
 
 --// Classes
@@ -18,7 +20,7 @@ local King = require(Pieces.King)
 --// Constants
 --local START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0"
 --local START_FEN = "nNnnkNNN/NnNNnnnN/NnnnnNNN/nnNnnnnN/NnnnnnNN/NnNNNNnn/NNNNNnNN/NNNnKnnn w - - 0 1"
-local START_FEN = "rnbq1bnr/pppp1ppp/8/3Kp1kP/4PP2/8/PPPP2P1/RNB2BNR w HAha - 0 1"
+local START_FEN = "r1b1k2r/pppp1ppp/2n2q1n/2b1p3/2B1P3/2NP1Q2/PPP1NPPP/R1B1K2R w KQkq - 0 1"
 
 local function _createBoard()
     local board = {}
@@ -53,13 +55,16 @@ function Match:_loadPositionFromFEN(FEN : string)
     local sections = FEN:split(" ")
 
     for character in sections[1]:gmatch(".") do
+        -- Check for new rank
         if (character == "/") then
             file = 1
             rank -= 1
         else
+            -- Check if there are spaces on board
             if (type(tonumber(character)) == "number") then
                 file += tonumber(character)
             else
+                -- Check if piece is white
                 if (String:IsUpper(character)) then
                     if (character == "P") then
                         self.Board[rank][file] = Pawn.new("w", file, rank)
@@ -74,6 +79,7 @@ function Match:_loadPositionFromFEN(FEN : string)
                     elseif (character == "K") then
                        self.Board[rank][file] = King.new("w", file, rank)
                     end
+                -- Check if piece is black
                 elseif (String:IsLower(character)) then
                     if (character == "p") then
                         self.Board[rank][file] = Pawn.new("b", file, rank)

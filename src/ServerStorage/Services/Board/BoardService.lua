@@ -1,8 +1,10 @@
+-- amazingcdub
+
 --// Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 
---// Utility
+--// Packages
 local Knit = require(ReplicatedStorage.Shared.Packages.Knit)
 
 --// Classes

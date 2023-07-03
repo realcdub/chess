@@ -1,3 +1,5 @@
+-- amazingcdub
+
 local PieceTypes = {
     ["P"] = "Pawn",
     ["N"] = "Knight",
