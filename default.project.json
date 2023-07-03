@@ -16,7 +16,10 @@
     "ServerStorage": {
       "$className": "ServerStorage",
       "Server": {
-        "$path": "src/ServerStorage"
+        "$path": "src/ServerStorage",
+        "ServerPackages": {
+          "$path": "ServerPackages"
+        }
       }
     },
 
