@@ -18,9 +18,9 @@ local Queen = require(Pieces.Queen)
 local King = require(Pieces.King)
 
 --// Constants
---local START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0"
+local START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0"
 --local START_FEN = "nNnnkNNN/NnNNnnnN/NnnnnNNN/nnNnnnnN/NnnnnnNN/NnNNNNnn/NNNNNnNN/NNNnKnnn w - - 0 1"
-local START_FEN = "r1b1k2r/pppp1ppp/2n2q1n/2b1p3/2B1P3/2NP1Q2/PPP1NPPP/R1B1K2R w KQkq - 0 1"
+--local START_FEN = "1nnnnnnn/1NNnNNN1/NnnnnnNN/nnnNnnn1/nnnNnnN1/nnnnNnn1/nn3n2/1nnnnNn1 w - - 0 1"
 
 local function _createBoard()
     local board = {}

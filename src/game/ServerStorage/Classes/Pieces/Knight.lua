@@ -18,7 +18,7 @@ function Knight.new(Color : string, FileIndex : number, RankIndex : number)
     return self
 end
 
-local function _getKnightMoves(InternalBoard, Piece, FileOffset : number, RankOffset : number)
+local function _getKnightMoves(InternalBoard : {[any] : any}, Piece, FileOffset : number, RankOffset : number)
     local KnightMoves = {}
 
     if ((Piece.RankIndex + RankOffset <= 0) or (Piece.FileIndex + FileOffset >= 9) or (Piece.FileIndex + FileOffset <= 0) or (Piece.RankIndex + RankOffset >= 9)) then return {} end

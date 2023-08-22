@@ -6,6 +6,7 @@ local ServerStorage = game:GetService("ServerStorage")
 
 --// Packages
 local Knit = require(ReplicatedStorage.Shared.Packages.Knit)
+local PieceUtil = require(ReplicatedStorage.Shared.Packages.PieceUtil)
 
 --// Classes
 local Classes = ServerStorage.Server.Classes
@@ -27,25 +28,50 @@ local DEFAULT_LIGHT_SQUARE_COLOR = Color3.fromRGB(255, 255, 255)
 
 local BoardService = Knit.CreateService {
     Name = "BoardService",
-    Client = {},
+    Client = {
+        MovePiece = Knit.CreateSignal()
+    },
 }
 
 function BoardService:KnitStart()
     print(self.Name .. " Started")
     local Match1 = Match.new(game:GetService("Players"):WaitForChild("amazingcdub"))
-    table.insert(MatchesContainer, Match1)
-    --print(Match1.Board)
+    table.insert(MatchesContainer.Matches, Match1)
     self:SetupWorldBoard(Match1.Board, Vector3.new(0, 5, 0))
+
+    self.Client.MovePiece:Connect(function(Player, WorldPiece, TargetSquare, OriginalSplitWorldPieceName, WorldBoard)
+        local PlayerMatch = MatchesContainer:FindMatchByPlayer(Player)
+
+        local SplitTargetSquareName = TargetSquare.Name:split("")
+
+        local OriginalRankIndex = tonumber(OriginalSplitWorldPieceName[2])
+        local OriginalFileIndex = tonumber(OriginalSplitWorldPieceName[1])
+
+        local TargetRankIndex = tonumber(SplitTargetSquareName[2])
+        local TargetFileIndex = tonumber(SplitTargetSquareName[1])
+
+        if (PlayerMatch.Board[TargetRankIndex][TargetFileIndex] ~= 0) then
+            WorldBoard.Pieces[tostring(TargetFileIndex) .. tostring(TargetRankIndex)]:Destroy()
+        end
+
+        local InternalPiece = PlayerMatch.Board[OriginalRankIndex][OriginalFileIndex]
+        InternalPiece.RankIndex = TargetRankIndex
+        InternalPiece.FileIndex = TargetFileIndex
+
+        PieceUtil:MoveWorldPiece(WorldPiece, TargetSquare.CFrame)
+        WorldPiece.Name = TargetSquare.Name
+
+        PlayerMatch.Board[OriginalRankIndex][OriginalFileIndex] = 0
+        PlayerMatch.Board[TargetRankIndex][TargetFileIndex] = InternalPiece
+    end)
 end
 
 function BoardService:KnitInit()
 end
 
 function BoardService.Client:GetLegalMoves(Player, FileIndex, RankIndex)
-    return MatchesContainer[1].Board[RankIndex][FileIndex]:GetPossibleMoves(MatchesContainer[1].Board)
-end
-
-function BoardService:SetupUIBoard(InternalBoard)
+    local PlayerMatch = MatchesContainer:FindMatchByPlayer(Player)
+    return PlayerMatch.Board[RankIndex][FileIndex]:GetPossibleMoves(PlayerMatch.Board)
 end
 
 function BoardService:_findAssetByPieceType(PieceType : string) : BasePart
@@ -97,7 +123,7 @@ function BoardService:SetupWorldBoard(InternalBoard, FirstSquareStartingPosition
                 -- Set a1 square position
                 CurrentSquare.Position = FirstSquareStartingPosition
             else
-                -- Set position of every square, except a1
+                -- Set position of every square, except a1, which is the guide square
                 CurrentSquare.Position = FirstSquareStartingPosition + Vector3.new(CurrentSquare.Size.X * (RankIndex - 1), 0, CurrentSquare.Size.Z * (FileIndex - 1))
             end
             
@@ -108,33 +134,33 @@ function BoardService:SetupWorldBoard(InternalBoard, FirstSquareStartingPosition
                 CurrentSquare.BrickColor = BrickColor.Black()
             end
             
-            -- Put Square into the World
+            -- Put square into the game
             CurrentSquare.Parent = Squares
         
             -- Internal Piece (2D Array)
             local CurrentInternalPiece = InternalBoard[RankIndex][FileIndex]
             
-            -- Empty Square
+            -- Empty square
             if (CurrentInternalPiece == 0) then continue  end
-            -- Piece World Asset
+            -- Piece world asset
             local CurrentWorldPiece = self:_findAssetByPieceType(CurrentInternalPiece.Type)
-            -- Continue if World Piece not found
+            -- Continue if piece not found
             if (CurrentWorldPiece == nil) then continue end
         
+            -- Set piece config
             local CurrentWorldPieceClone = CurrentWorldPiece:Clone()
             CurrentWorldPieceClone.CFrame = CurrentSquare.CFrame + Vector3.new(0, CurrentWorldPieceClone.Size.Y / 2, 0)
             CurrentWorldPieceClone.Name = tostring(FileIndex) .. tostring(RankIndex)
             CurrentWorldPieceClone.Anchored = true
 
-            local CurrentWorldPieceClickDetector = Instance.new("ClickDetector")
-            CurrentWorldPieceClickDetector.MaxActivationDistance = MAX_PIECE_CLICK_ACTIVATION_DISTANCE
-            CurrentWorldPieceClickDetector.Parent = CurrentWorldPieceClone
-
+            -- Set piece color accordingly
             if (CurrentInternalPiece.Color == "b") then
                 CurrentWorldPieceClone.BrickColor = BrickColor.Black()
             else
                 CurrentWorldPieceClone.BrickColor = BrickColor.White()
             end
+
+            -- Put piece into the game
             CurrentWorldPieceClone.Parent = Pieces
         end
     end

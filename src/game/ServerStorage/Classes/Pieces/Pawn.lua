@@ -9,7 +9,6 @@ Pawn.__index = Pawn
 
 function Pawn.new(Color : string, FileIndex : number, RankIndex : number)
     local self = setmetatable(BasePiece.new("P", Color, FileIndex, RankIndex), Pawn)
-    self.NumberOfMoves = 0 :: number
     return self
 end
 
@@ -28,22 +27,24 @@ function Pawn:GetPossibleMoves(InternalBoard)
         end
 
         -- Capturing
-        if (self.RankIndex + 1 <= 8 and self.FileIndex - 1 >= 1 and self.FileIndex + 1 <= 8 and InternalBoard[self.RankIndex + 1][self.FileIndex + 1] ~= 0 and InternalBoard[self.RankIndex + 1][self.FileIndex + 1].Color == "b") then
+        if (self.RankIndex + 1 <= 8 and self.FileIndex + 1 <= 8 and InternalBoard[self.RankIndex + 1][self.FileIndex + 1] ~= 0 and InternalBoard[self.RankIndex + 1][self.FileIndex + 1].Color == "b") then
             PossibleMoves[#PossibleMoves + 1] = {self.FileIndex + 1, self.RankIndex + 1}
         end
 
-        if (self.RankIndex + 1 <= 8 and self.FileIndex - 1 >= 1 and self.FileIndex + 1 <= 8 and InternalBoard[self.RankIndex + 1][self.FileIndex - 1] ~= 0 and InternalBoard[self.RankIndex + 1][self.FileIndex - 1].Color == "b") then
+        if (self.RankIndex + 1 <= 8 and self.FileIndex - 1 >= 1 and InternalBoard[self.RankIndex + 1][self.FileIndex - 1] ~= 0 and InternalBoard[self.RankIndex + 1][self.FileIndex - 1].Color == "b") then
             PossibleMoves[#PossibleMoves + 1] = {self.FileIndex - 1, self.RankIndex + 1}
         end
 
+        --[[
         -- En Passant
         if (self.RankIndex == 5 and InternalBoard[self.RankIndex][self.FileIndex + 1] ~= 0 and InternalBoard[self.RankIndex][self.FileIndex - 1].Color == "b" and InternalBoard[self.RankIndex][self.FileIndex - 1].Type == "P") then
             PossibleMoves[#PossibleMoves+1] = {self.FileIndex - 1, self.RankIndex + 1}
         end
 
-        if (self.RankIndex == 5 and InternalBoard[self.RankIndex][self.FileIndex + 1] ~= 0 and InternalBoard[self.RankIndex][self.FileIndex + 1].Color == "b" and InternalBoard[self.RankIndex][self.FileIndex - 1].Type == "P" ) then
+        if (self.RankIndex == 5 and InternalBoard[self.RankIndex][self.FileIndex + 1] ~= 0 and InternalBoard[self.RankIndex][self.FileIndex + 1].Color == "b" and InternalBoard[self.RankIndex][self.FileIndex + 1].Type == "P" ) then
             PossibleMoves[#PossibleMoves + 1] = {self.FileIndex + 1, self.RankIndex + 1}
         end
+        -]]
     end
 
     -- Bloack Pawn Logic
@@ -59,14 +60,15 @@ function Pawn:GetPossibleMoves(InternalBoard)
         end
 
         -- Capturing
-        if (self.RankIndex - 1 >= 1 and self.FileIndex - 1 >= 1 and self.FileIndex + 1 <= 8 and InternalBoard[self.RankIndex - 1][self.FileIndex + 1] ~= 0 and InternalBoard[self.RankIndex - 1][self.FileIndex + 1].Color == "w") then
+        if (self.RankIndex - 1 >= 1 and self.FileIndex + 1 <= 8 and InternalBoard[self.RankIndex - 1][self.FileIndex + 1] ~= 0 and InternalBoard[self.RankIndex - 1][self.FileIndex + 1].Color == "w") then
             PossibleMoves[#PossibleMoves + 1] = {self.FileIndex + 1, self.RankIndex - 1}
         end
 
-        if (self.RankIndex - 1 >= 1 and self.FileIndex - 1 >= 1 and self.FileIndex + 1 <= 8 and InternalBoard[self.RankIndex - 1][self.FileIndex - 1] ~= 0 and (InternalBoard[self.RankIndex - 1][self.FileIndex - 1].Color == "w")) then
+        if (self.RankIndex - 1 >= 1 and self.FileIndex - 1 >= 1 and InternalBoard[self.RankIndex - 1][self.FileIndex - 1] ~= 0 and (InternalBoard[self.RankIndex - 1][self.FileIndex - 1].Color == "w")) then
             PossibleMoves[#PossibleMoves + 1] = {self.FileIndex - 1, self.RankIndex - 1}
         end
 
+        --[[
         -- En Passant
         if (self.RankIndex == 4 and InternalBoard[self.RankIndex][self.FileIndex - 1] ~= 0 and InternalBoard[self.RankIndex][self.FileIndex - 1].Color == "w" and InternalBoard[self.RankIndex][self.FileIndex - 1].Type == "P") then
             PossibleMoves[#PossibleMoves+1] = {self.FileIndex - 1, self.RankIndex + 1}
@@ -75,9 +77,39 @@ function Pawn:GetPossibleMoves(InternalBoard)
         if (self.RankIndex == 4 and InternalBoard[self.RankIndex][self.FileIndex + 1] ~= 0 and InternalBoard[self.RankIndex][self.FileIndex + 1].Color == "w" and InternalBoard[self.RankIndex][self.FileIndex - 1].Type == "P") then
             PossibleMoves[#PossibleMoves + 1] = {self.FileIndex + 1, self.RankIndex + 1}
         end
+        --]]
     end
 
     return PossibleMoves
+end
+
+function Pawn:GetCapturingThreats(KingColor : string)
+    local CapturingMoves = {}
+
+    if (KingColor == "b" and self.Color == "w") then
+        -- Capturing
+        if (self.RankIndex + 1 <= 8 and self.FileIndex + 1 <= 8) then
+            CapturingMoves[#CapturingMoves + 1] = {self.FileIndex + 1, self.RankIndex + 1}
+        end
+
+        if (self.RankIndex + 1 <= 8 and self.FileIndex - 1 >= 1) then
+            CapturingMoves[#CapturingMoves + 1] = {self.FileIndex - 1, self.RankIndex + 1}
+        end
+    end
+
+    if (KingColor == "w" and self.Color == "b") then
+        -- Capturing
+        if (self.RankIndex - 1 >= 1 and self.FileIndex + 1 <= 8) then
+            CapturingMoves[#CapturingMoves + 1] = {self.FileIndex + 1, self.RankIndex - 1}
+        end
+
+        if (self.RankIndex - 1 >= 1 and self.FileIndex - 1 >= 1) then
+            CapturingMoves[#CapturingMoves + 1] = {self.FileIndex - 1, self.RankIndex - 1}
+        end
+    end
+
+    print(CapturingMoves)
+    return CapturingMoves
 end
 
 return Pawn
