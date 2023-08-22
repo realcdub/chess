@@ -1,3 +1,5 @@
+-- amazingcdub
+
 local PieceTypes = {
     ["P"] = "Pawn",
     ["N"] = "Knight",
@@ -16,3 +18,5 @@ function PieceTypes:FindPieceByType(Character : string)
     warn("Did not find piece!")
     return nil
 end
+
+return PieceTypes
