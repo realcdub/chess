@@ -13,13 +13,6 @@
         }
       },
   
-      "ReplicatedFirst": {
-        "$className": "ReplicatedFirst",
-        "Source": {
-          "$path": "src/lobby/ReplicatedFirst"
-        }
-      },
-  
       "ServerStorage": {
         "$className": "ServerStorage",
         "Server": {
